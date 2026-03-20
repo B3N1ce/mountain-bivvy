@@ -1,5 +1,7 @@
 import hid
 import time
+import displaypad_keyfunctions as kf
+import json
 
 # Konfiguration
 VENDOR_ID = 0x3282 #Mountain
@@ -10,41 +12,67 @@ INTERFACE_NUM = 3
 KEY_MAP = {} # Key Dictionary
 
 class DisplaypadKey:
-    def __init__(self, index, byte_pos, bit_value):
+    def __init__(self, index, byte_pos, bit_value, action=None):
         self.index = index
         self.byte_pos = byte_pos
         self.bit_value = bit_value
         self.state = 0  # 0 = losgelassen, 1 = gedrückt
+        self.action = action if action else self.empty
 
     def __repr__(self):
         # logging
         status = "PRESSED" if self.state == 1 else "RELEASED"
         return f"[Key {self.index:02d}] Status: {status:8s} (Byte:{self.byte_pos} Bit:{self.bit_value})"
 
+    def empty(self):
+        print("ACTION: empty")
+
     def press(self):
         self.state = 1
         # Hier könnte später die Logik stehen (z.B. ein Programm starten)
         print(f"DOWN: {self}") # Nutzt automatisch __repr__
+        self.action()
 
     def release(self):
         self.state = 0
         print(f"UP:   {self}") # Nutzt automatisch __repr__
 
-# Initialisierung mit den Werten aus der Analyse
+def load_config():
+    try:
+        with open("config.json", "r") as f:
+            return json.load(f)
+    except FileNotFoundError:
+        print("Config nicht gefunden, lade Defaults...")
+        return {"keys": {}}
+
 def init_keys():
     KEY_MAP.clear()
+    config_data = load_config()
+    # Index, Byte, BitValue
+    mapping = [
+        ( 1, 42,   2), ( 2, 42,   4), ( 3, 42,   8), ( 4, 42,  16), ( 5, 42,  32), ( 6, 42,  64), 
+        ( 7, 42, 128), ( 8, 47,   1), ( 9, 47,   2), (10, 47,   4), (11, 47,   8), (12, 47,  16)
+    ]
     
-    # Taste 1 bis 7 (Reihe 1 und Anfang Reihe 2) liegen in Byte 42
-    # Werte: 2, 4, 8, 16, 32, 64, 128
-    for i in range(7):
-        bit_val = 2**(i + 1) # Errechnet 2, 4, 8...
-        KEY_MAP[i] = DisplaypadKey(index=i+1, byte_pos=42, bit_value=bit_val)
-    
-    # Taste 8 bis 12 (Rest der Reihe 2) liegen in Byte 47
-    # Werte: 1, 2, 4, 8, 16
-    for i in range(7, 12):
-        bit_val = 2**(i - 7) # Errechnet 1, 2, 4, 8, 16
-        KEY_MAP[i] = DisplaypadKey(index=i+1, byte_pos=47, bit_value=bit_val)
+    for idx, byte, bit in mapping:
+        # 1. Daten aus JSON holen
+        key_info = config_data["keys"].get(str(idx))
+        assigned_action = None
+        
+        if key_info:
+            func_name = key_info.get("action")
+            args = key_info.get("args", [])
+            
+            # 2. Funktion dynamisch im Modul 'kf' suchen
+            if hasattr(kf, func_name):
+                func = getattr(kf, func_name)
+                # Falls Argumente da sind, nutzen wir lambda zum "Vorverpacken"
+                if args:
+                    assigned_action = lambda a=args, f=func: f(*a)
+                else:
+                    assigned_action = func
+        
+        KEY_MAP[idx] = DisplaypadKey(idx, byte, bit, action=assigned_action)
 
 def process_usb_data(data):
     """Prüft alle Tasten-Objekte gegen das aktuelle USB-Paket."""
