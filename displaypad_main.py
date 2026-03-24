@@ -1,6 +1,6 @@
 import hid
 import time
-import displaypad_keyfunctions as kf
+from modules.displaypad import displaypad_keyfunctions as kf
 import json
 
 # Konfiguration
