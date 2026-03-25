@@ -1,5 +1,4 @@
 import subprocess
-
 # --- KATEGORIE: SYSTEM-STEUERUNG ---
 
 def toggle_mute():
@@ -97,3 +96,19 @@ def show_system_resources():
 
 def printText(text:str):
     print("ACTION: Print Text = {text}")
+
+# Mapping für die GUI: Anzeigename -> Funktionsobjekt
+AVAILABLE_ACTIONS = {
+    "Audio: Mute Toggle": toggle_mute,
+    "Audio: Vol +5%": volume_up,
+    "Audio: Vol -5%": volume_down,
+    "System: Suspend": system_suspend,
+    "Media: Play/Pause": media_play_pause,
+    "Media: Next": media_next,
+    "Media: Previous": media_prev,
+    "App: Terminal": start_terminal,
+    "App: Browser": open_default_browser,
+    "App: Rechner": start_calculator,
+    "Tool: Screenshot": take_screenshot,
+    "Debug: Hello Print": print_hello
+}

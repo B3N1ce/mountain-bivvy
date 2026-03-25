@@ -1,10 +1,37 @@
 {
-  "keys": {
-    "1": { "action": "open_default_browser", "args": [] },
-    "2": { "action": "start_app", "args": ["steam"] },
-    "3": { "action": "volume_up", "args": [] },
-    "4": { "action": "volume_down", "args": [] },
-    "5": { "action": "media_play_pause", "args": [] },
-    "12": { "action": "print_hello", "args": [] }
-  }
+    "keys": {
+        "1": {
+            "action": "open_default_browser",
+            "args": []
+        },
+        "2": {
+            "action": "start_app",
+            "args": [
+                "steam"
+            ]
+        },
+        "3": {
+            "action": "volume_up",
+            "args": [
+                5
+            ]
+        },
+        "4": {
+            "action": "volume_down",
+            "args": [
+                5
+            ]
+        },
+        "5": {
+            "action": "media_play_pause",
+            "args": []
+        },
+        "12": {
+            "action": "print_hello",
+            "args": []
+        },
+        "11": {
+            "action": "Tool: Screenshot"
+        }
+    }
 }

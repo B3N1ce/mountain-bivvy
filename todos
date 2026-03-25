@@ -1,0 +1,5 @@
+todos / roadmap:
+
+- volume sync umstellen von timer basiert auf event basiert (pactl subscribe)
+- gui
+- refactoring
