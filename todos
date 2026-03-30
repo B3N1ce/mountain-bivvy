@@ -2,4 +2,5 @@ todos / roadmap:
 
 - volume sync umstellen von timer basiert auf event basiert (pactl subscribe)
 - gui
+    - zusätzlichen tab für daemon / einstellungen (daemon beenden und starten)
 - refactoring

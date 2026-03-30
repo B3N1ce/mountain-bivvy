@@ -1,0 +1,5 @@
+# qmldir
+module Bivvy.Components
+singleton Style Style.qml
+# Falls das nicht klappt, nutze:
+# singleton Style 1.0 Style.qml
